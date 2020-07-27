@@ -29,7 +29,7 @@ async def on_ready():
 
     print(communities)
 
-    loop.MyCog(communities)
+    loop.MyCog(communities,bot)
         
 
 @bot.command()
