@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 from HTTPrequest import Request
-import Loop
+import loop
 
 class ListenerCog(commands.Cog):
     def __init__(self,bot, communities):
@@ -11,7 +11,7 @@ class ListenerCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("ログインしました。プログラム起動します。")
-        Loop.setup(self.bot,self.communities)
+        loop.setup(self.bot,self.communities)
 
 
 def setup(bot,communities):
