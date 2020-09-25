@@ -38,6 +38,9 @@ class MainBot(commands.Bot):
 
             db.execute("INSERT INTO servers (created_at,updated_at,server_name) values ({0},{1},{2});".format(date,date,server_name))
         
+    def get_id(self,server_name):
+        return db.get_result_execute("SELECT id FROM servers WHERE server_name = '{0}'".format(server_name))
+        
 
 if __name__ == "__main__":
     bot = MainBot(command_prefix=config["prefix"], help_command=Command.SimpleHelpCommand())

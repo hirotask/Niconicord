@@ -17,7 +17,11 @@ class CommandCog(commands.Cog):
     
     @commands.command()
     async def add(self,id,name,ctx):
-        discordbot.db.execute("INSERT INTO comm")
+        #サーバー名からserversテーブルのIDを取得する
+
+        self.bot.get_id(ctx.guild.name)
+
+        discordbot.db.execute("INSERT INTO communities (server_id, communitiy_id,community_name) VALUES ({0},{1},{2});".format(1,id,name))
         await ctx.send("ID:" + id + ", NAME:" + name + "で登録しました")
 
     @commands.command()
