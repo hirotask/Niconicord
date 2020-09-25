@@ -10,6 +10,7 @@ import json
 import psycopg2
 import os
 
+#test
 #config.jsonの読み込み
 with open("config.json") as conf:
     config = json.load(conf)
