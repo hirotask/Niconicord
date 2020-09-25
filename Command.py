@@ -1,7 +1,9 @@
 from discord.ext import commands
 import discord
+import json
 from HTTPrequest import Request
 import discordbot
+from DBmanager import DBManager
 
 class CommandCog(commands.Cog):
     def __init__(self,bot):
@@ -12,15 +14,11 @@ class CommandCog(commands.Cog):
     async def get(self,ctx):
         """ APIを叩いた結果をJSON形式で表示する。デフォルトは＠Ltoさんのコミュニティ """
         await ctx.send(Request())
-
+    
     @commands.command()
-    async def info(self,ctx,id,name):
-        """ コミュニティの追加をする。使い方は -info コミュID コミュ名 """
-
-        with open(discordbot.path,mode="a") as f:
-            f.write("{0}:{1}\n".format(id,name))
-
-        await ctx.send("コミュニティを追加しました")
+    async def add(self,id,name,ctx):
+        discordbot.db.execute("INSERT INTO comm")
+        await ctx.send("ID:" + id + ", NAME:" + name + "で登録しました")
 
     @commands.command()
     async def reload(self,ctx):
@@ -33,6 +31,17 @@ class CommandCog(commands.Cog):
             discordbot.communities.update(key=value)
     
         await ctx.send("リロード完了しました")
+
+class SimpleHelpCommand(commands.DefaultHelpCommand):
+    def __init__(self):
+        super().__init__()
+        self.commands_heading = "コマンド："
+        self.no_category = "その他"
+        self.command_attrs["help"] = "コマンド一覧と簡単な説明を表示"
+
+    def get_ending_note(self):
+        return (f"各コマンドの説明: -help <コマンド名> \n"
+                f"各カテゴリの説明: -help <カテゴリ名> \n")
 
 
 def setup(bot):

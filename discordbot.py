@@ -1,38 +1,45 @@
 import discord
 from discord.ext import commands
+from DBmanager import DBManager
 import re
 import traceback
 import Listener
 import Command
-from HelpCommand import SimpleHelpCommand
+import datetime
+import json
+import psycopg2
+import os
 
-TOKEN = "NzM2NTcwMzgzODM0MTUzMDAy.XxwuoA.uAvK2vbJuC64qtS0yFseTRbRrcQ"
+#config.jsonの読み込み
+with open("config.json") as conf:
+    config = json.load(conf)
 
-communities = {}
+DATABASE_URL = config["url"]
+db = DBManager(DATABASE_URL)
 
 path ="communities.txt"
+communities = {}
 
 class MainBot(commands.Bot):
     def __init__(self,command_prefix,help_command):
         super().__init__(command_prefix,help_command)
+    
+    def set_db(self):
+        server_names = []
 
-        #コミュニティの読み込み
-        with open(path) as f:
-            l = [s.strip() for s in f.readlines()]
+        async for guild in self.fetch_guilds(limit=100):
+            server_names.append(guild.name)
 
-            for arg in l:
-                _key = arg[:arg.find(":")]
-                _value = arg[arg.find(":")+1:]
 
-                communities[_key] = _value
+        for server_name in server_names :
+            datetime_format = datetime.datetime().today()
+            date = datetime_format.strftime("%Y-%m-%d %H:%M:%S")
 
-        print(communities)
-
-    def get_channel(self,channel):
-        return super().get_channel(channel)
+            db.execute("INSERT INTO servers (created_at,updated_at,server_name) values ({0},{1},{2});".format(date,date,server_name))
+        
 
 if __name__ == "__main__":
-    bot = MainBot(command_prefix="-", help_command=SimpleHelpCommand())
+    bot = MainBot(command_prefix=config["prefix"], help_command=Command.SimpleHelpCommand())
     Listener.setup(bot,communities)
     Command.setup(bot)
-    bot.run(TOKEN)
+    bot.run(config["token"])
